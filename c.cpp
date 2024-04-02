@@ -1,5 +1,5 @@
 #include "c.h"
-#include "object_repository.hpp"
+#include <NGT/Capi.h>
 
 #include <iostream>
 #include <fstream>
@@ -43,28 +43,4 @@ void stat(const char *op) {
     char now[64];
     strftime(now, 64, "%Y-%m-%d %H:%M:%S", local_time);
     std::cout << now << "\t" << op << "\t" << vmpeak << "\t" << vmsize << "\t" << vmhwm << "\t" << vmrss << std::endl;
-}
-
-object_repository_t or_init() {
-    return static_cast<object_repository_t>(new ObjectRepository());
-}
-
-void or_close(object_repository_t o) {
-    delete static_cast<ObjectRepository*>(o);
-}
-
-size_t or_insert(object_repository_t o, float* v, size_t size) {
-    return (static_cast<ObjectRepository*>(o))->insert(v, size);
-}
-
-void or_remove(object_repository_t o, size_t i) {
-    (static_cast<ObjectRepository*>(o))->remove(i);
-}
-
-float* or_get(object_repository_t o, size_t i) {
-    return (static_cast<ObjectRepository*>(o))->get(i);
-}
-
-size_t or_size(object_repository_t o) {
-    return (static_cast<ObjectRepository*>(o))->size();
 }

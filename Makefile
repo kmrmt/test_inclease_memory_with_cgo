@@ -5,7 +5,7 @@ SRCS := $(wildcard *.cpp)
 OBJS := $(SRCS:.cpp=.o)
 
 CC := gcc
-CFLAGS := -fPIC -g -Wall -O2 -L.
+CFLAGS := -fPIC -g -Wall -O2 -L. -L/usr/local/lib
 CXX := g++
 CXXFLAGS := -fPIC -g -Wall -O2 -std=c++20
 AR := ar
@@ -17,7 +17,7 @@ bin: $(BIN)
 lib: $(LIB)
 
 $(BIN): $(LIB) main.c
-	$(CC) $(CFLAGS) main.c -o $(BIN) -ltest -lstdc++
+	$(CC) $(CFLAGS) main.c -o $(BIN) -ltest -lstdc++ -lngt
 
 $(LIB): $(OBJS)
 	$(AR) rvs $(LIB) $(OBJS)

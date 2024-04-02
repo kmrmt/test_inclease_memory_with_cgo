@@ -1,4 +1,5 @@
 #include "c.h"
+#include <NGT/Capi.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -13,22 +14,30 @@ int main() {
     for (int i = 0; i < size; i++) {
         vectors[i * dim] = i;
     }
-    size_t *ids = (size_t *)malloc(sizeof(size_t) * size);
+    ObjectID *ids = (ObjectID*)malloc(sizeof(ObjectID) * size);
 
-    object_repository_t o = or_init();
-    for (int n = 0; n < 100; n++) {
-        stat("init");
-        for (int i = 0; i < size; i++) {
-            ids[i] = or_insert(o, &vectors[i * dim], dim);
-        }
-        stat("insert");
+    NGTError e = ngt_create_error_object();
+    NGTProperty p = ngt_create_property(e);
+    ngt_set_property_edge_size_for_creation(p, 40, e);
+    ngt_set_property_edge_size_for_search(p, 40, e);
+    ngt_set_property_dimension(p, dim, e);
+    ngt_set_property_object_type_float(p, e);
+    ngt_set_property_distance_type_inner_product(p, e);
 
-        for (int i = 0; i < size; i++) {
-            or_remove(o, ids[i]);
-        }
-        stat("remove");
+    NGTIndex idx = ngt_create_graph_and_tree_in_memory(p, e);
+
+    stat("init");
+    for (int i = 0; i < size; i++) {
+        ids[i] = ngt_insert_index_as_float(idx, &vectors[i * dim], dim, e);
     }
-    or_close(o);
+    stat("insert");
+
+    ngt_create_index(idx, 16, e);
+    stat("create_index");
+
+    ngt_close_index(idx);
+    ngt_destroy_property(p);
+    ngt_destroy_error_object(e);
 
     free(ids);
     free(vectors);
